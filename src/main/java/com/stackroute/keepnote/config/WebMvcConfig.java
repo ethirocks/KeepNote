@@ -1,5 +1,8 @@
 package com.stackroute.keepnote.config;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /*This class will contain bean for viewresolver
@@ -11,6 +14,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @EnableWebMvc - Adding this annotation to an @Configuration class imports the Spring MVC 
  * 				   configuration from WebMvcConfigurationSupport 
  * */
+
+@Configuration
+@EnableWebMvc
+@ComponentScan
 
 public class WebMvcConfig implements WebMvcConfigurer {
 

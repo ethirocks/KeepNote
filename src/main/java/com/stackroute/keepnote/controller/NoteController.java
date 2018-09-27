@@ -5,6 +5,9 @@ package com.stackroute.keepnote.controller;
  * any POJO class as a controller so that Spring can recognize this class as a Controller
  */
 
+import org.springframework.stereotype.Controller;
+
+@Controller
 public class NoteController {
 	/*
 	 * From the problem statement, we can understand that the application requires
