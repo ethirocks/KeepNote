@@ -1,5 +1,22 @@
 package com.stackroute.keepnote.config;
 
+import java.io.IOException;
+import java.util.Properties;
+import javax.sql.DataSource;
+
+import com.stackroute.keepnote.model.Note;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.hibernate.SessionFactory;
+import org.omg.CORBA.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import com.stackroute.keepnote.model.Note;
+
 /*This class will contain the application-context for the application. 
  * Define the following annotations:
  * @Configuration - Annotating a class with the @Configuration indicates that the 
@@ -9,23 +26,52 @@ package com.stackroute.keepnote.config;
  *                  
  * */
 
-import org.springframework.context.annotation.Configuration;
+
 
 @Configuration
+@EnableTransactionManagement
 public class ApplicationContextConfig {
-
 	/*
 	 * Define the bean for DataSource. In our application, we are using MySQL as the
 	 * dataSource. To create the DataSource bean, we need to know: 1. Driver class
 	 * name 2. Database URL 3. UserName 4. Password
 	 */
+    @Bean
+    @Autowired
+    public DataSource dataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/note");
+        dataSource.setUsername("root");
+        dataSource.setPassword("12345");
+
+        return dataSource;
+    }
 
 	/*
 	 * Define the bean for SessionFactory. Hibernate SessionFactory is the factory
 	 * class through which we get sessions and perform database operations.
 	 */
 
-	/*
+
+    @Bean
+    @Autowired
+    public LocalSessionFactoryBean getSessionFactory(DataSource dataSource) throws IOException {
+        LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+        sessionFactoryBean.setDataSource(dataSource);
+        Properties properties = new Properties();
+        properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.format_sql", "delete");
+        sessionFactoryBean.setAnnotatedClasses(Note.class);
+        sessionFactoryBean.setHibernateProperties(properties);
+        sessionFactoryBean.afterPropertiesSet();
+        return sessionFactoryBean;
+    }
+
+
+    /*
 	 * Define the bean for Transaction Manager. HibernateTransactionManager handles
 	 * transaction in Spring. The application that uses single hibernate session
 	 * factory for database transaction has good choice to use
@@ -33,4 +79,11 @@ public class ApplicationContextConfig {
 	 * JDBC too. HibernateTransactionManager allows bulk update and bulk insert and
 	 * ensures data integrity.
 	 */
+    @Bean
+    @Autowired
+    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+        HibernateTransactionManager txManager = new HibernateTransactionManager();
+        txManager.setSessionFactory(sessionFactory);
+        return txManager;
+    }
 }

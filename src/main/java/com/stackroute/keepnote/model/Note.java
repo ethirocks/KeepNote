@@ -1,5 +1,6 @@
 package com.stackroute.keepnote.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /*
@@ -9,53 +10,94 @@ import java.time.LocalDateTime;
  * process of looking through that particular Java object to recreate it as a table in your database.
  */
 
+@Entity
 public class Note {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int noteId;
+	@Column(nullable = false)
+	private String noteTitle;
+	@Column(nullable = false)
+	private String noteContent;
+	@Column(nullable = false)
+	private String noteStatus;
+	private LocalDateTime createdAt;
+
+
+	/* All the getters/setters definition should be implemented here */
 	public Note() {
 
 	}
 
-	public Note(int i, String string, String string2, String string3, LocalDateTime localDate) {
+	public Note(int noteId, String noteTitle, String noteContent, String noteStatus, LocalDateTime createdAt) {
+		super();
+		this.noteId = noteId;
+		this.noteTitle = noteTitle;
+		this.noteContent = noteContent;
+		this.noteStatus = noteStatus;
+		this.createdAt = createdAt;
 	}
 
 	public int getNoteId() {
+		return noteId;
+	}
 
-		return 0;
+	public void setNoteId(int noteId) {
+		this.noteId = noteId;
 	}
 
 	public String getNoteTitle() {
+		return noteTitle;
+	}
 
-		return null;
+	public void setNoteTitle(String noteTitle) {
+		this.noteTitle = noteTitle;
 	}
 
 	public String getNoteContent() {
+		return noteContent;
+	}
 
-		return null;
+	public void setNoteContent(String noteContext) {
+		this.noteContent = noteContext;
 	}
 
 	public String getNoteStatus() {
-
-		return null;
+		return noteStatus;
 	}
 
-	public void setNoteId(int parseInt) {
-
+	public void setNoteStatus(String noteStatus) {
+		this.noteStatus = noteStatus;
 	}
 
-	public void setNoteTitle(String parameter) {
-
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setNoteContent(String parameter) {
-
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
-	public void setNoteStatus(String parameter) {
-
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Note)) {
+			return false;
+		}
+		Note note = (Note) o;
+		return getNoteId() == note.getNoteId() &&
+				getNoteTitle().equals(note.getNoteTitle()) &&
+				getNoteContent().equals(note.getNoteContent()) &&
+				getNoteStatus().equals(note.getNoteStatus());
 	}
 
-	public void setCreatedAt(LocalDateTime now) {
-
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Integer.toString(getNoteId()).hashCode();
+		result = prime * result + getNoteTitle().hashCode();
+		result = prime * result + getNoteContent().hashCode();
+		return result;
 	}
-
 }

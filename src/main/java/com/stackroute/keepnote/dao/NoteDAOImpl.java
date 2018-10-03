@@ -2,9 +2,15 @@ package com.stackroute.keepnote.dao;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.hibernate.SessionFactory;
+import javax.persistence.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.stackroute.keepnote.model.Note;
+
 
 /*
  * This class is implementing the NoteDAO interface. This class has to be annotated with @Repository
@@ -16,22 +22,36 @@ import com.stackroute.keepnote.model.Note;
  * 					context.  
  * */
 
+@Repository
+@Transactional
 public class NoteDAOImpl implements NoteDAO {
 
 	/*
 	 * Autowiring should be implemented for the SessionFactory.
 	 */
+    @Autowired
+    SessionFactory sessionFactory;
 
 	public NoteDAOImpl(SessionFactory sessionFactory) {
-
+        this.sessionFactory = sessionFactory;
 	}
 
-	/*
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    /*
 	 * Save the note in the database(note) table.
 	 */
 
 	public boolean saveNote(Note note) {
-		return false;
+        sessionFactory.getCurrentSession().save(note);
+        sessionFactory.getCurrentSession().flush();
+        return true;
 
 	}
 
@@ -40,7 +60,13 @@ public class NoteDAOImpl implements NoteDAO {
 	 */
 
 	public boolean deleteNote(int noteId) {
-		return false;
+        if(getNoteById(noteId)==null) {
+            return false;
+        } else {
+            sessionFactory.getCurrentSession().delete(getNoteById(noteId));
+            sessionFactory.getCurrentSession().flush();
+            return true;
+        }
 
 	}
 
@@ -48,23 +74,34 @@ public class NoteDAOImpl implements NoteDAO {
 	 * retrieve all existing notes sorted by created Date in descending
 	 * order(showing latest note first)
 	 */
+    @SuppressWarnings("unchecked")
 	public List<Note> getAllNotes() {
-		return null;
-
+        String hql = "FROM Note note ORDER BY note.createdAt DESC";
+        Query query = getSessionFactory().openSession().createQuery(hql);
+        return ((org.hibernate.query.Query) query).getResultList();
 	}
 
 	/*
 	 * retrieve specific note from the database(note) table
 	 */
 	public Note getNoteById(int noteId) {
-		return null;
+        Note note = (Note)sessionFactory.getCurrentSession().get(Note.class, noteId);
+        sessionFactory.getCurrentSession().flush();
+        return note;
 
 	}
 
 	/* Update existing note */
 
 	public boolean UpdateNote(Note note) {
-		return false;
+        if(getNoteById(note.getNoteId())==null) {
+            return false;
+        } else {
+            sessionFactory.getCurrentSession().clear();
+            sessionFactory.getCurrentSession().update(note);
+            sessionFactory.getCurrentSession().flush();
+            return true;
+        }
 
 	}
 
