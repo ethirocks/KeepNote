@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import org.hibernate.SessionFactory;
@@ -12,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,21 +29,22 @@ import com.stackroute.keepnote.model.Note;
 @ContextConfiguration(classes = { ApplicationContextConfig.class })
 public class NoteDAOImplTest {
 
-	@Autowired
-	private SessionFactory sessionFactory;
+	@PersistenceContext
+	private EntityManager entityManager;
+//	private SessionFactory sessionFactory;
 
 	private NoteDAO noteDAO;
 	private Note note;
 
 	@Before
 	public void setUp() {
-		noteDAO = new NoteDAOImpl(sessionFactory);
+		noteDAO = new NoteDAOImpl(entityManager);
 		note = new Note(1, "Testing-1", "Unit test for DAO", "active", LocalDateTime.now());
 	}
 
 	@After
 	public void tearDown() {
-		Query query = sessionFactory.getCurrentSession().createQuery("DELETE from Note");
+		Query query = entityManager.createQuery("DELETE from Note");
 		query.executeUpdate();
 	}
 
@@ -48,7 +53,9 @@ public class NoteDAOImplTest {
 	public void testSaveNoteSuccess() {
 
 		noteDAO.saveNote(note);
+		System.out.println("fvg"+noteDAO.saveNote(note));
 		List<Note> notes = noteDAO.getAllNotes();
+		System.out.println("TITLE:"+notes.get(0).getNoteTitle());
 		assertEquals("Testing-1", notes.get(0).getNoteTitle());
 		noteDAO.deleteNote(note.getNoteId());
 

@@ -1,103 +1,115 @@
 package com.stackroute.keepnote.model;
 
-import javax.persistence.*;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 /*
  * The class "Note" will be acting as the data model for the note Table in the database. Please
- * note that this class is annotated with @Entity annotation. Hibernate will scan all package for 
- * any Java objects annotated with the @Entity annotation. If it finds any, then it will begin the 
+ * note that this class is annotated with @Entity annotation. Hibernate will scan all package for
+ * any Java objects annotated with the @Entity annotation. If it finds any, then it will begin the
  * process of looking through that particular Java object to recreate it as a table in your database.
  */
-
 @Entity
+@Table(name="NOTE")
 public class Note {
-
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID",nullable = false)
 	private int noteId;
-	@Column(nullable = false)
+	@Column(name = "NOTETITLE",nullable = false)
 	private String noteTitle;
-	@Column(nullable = false)
+	@Column(name = "NOTECONTENT",nullable = false)
 	private String noteContent;
-	@Column(nullable = false)
+	@Column(name = "NOTESTATUS",nullable = false)
 	private String noteStatus;
-	private LocalDateTime createdAt;
-
-
-	/* All the getters/setters definition should be implemented here */
+	@Column(name = "DT",nullable = false)
+	private LocalDateTime dateTime;
 	public Note() {
+		this.dateTime=LocalDateTime.now();
 
 	}
 
-	public Note(int noteId, String noteTitle, String noteContent, String noteStatus, LocalDateTime createdAt) {
-		super();
-		this.noteId = noteId;
-		this.noteTitle = noteTitle;
-		this.noteContent = noteContent;
-		this.noteStatus = noteStatus;
-		this.createdAt = createdAt;
+	public Note(int i, String string, String string2, String string3, LocalDateTime localDate) {
+		this.noteId=i;
+		this.noteTitle=string;
+		this.noteContent=string2;
+		this.noteStatus=string3;
+		this.dateTime=localDate;
+		System.out.println("in const"+noteId+noteTitle+noteContent+noteStatus+dateTime);
 	}
 
 	public int getNoteId() {
+
 		return noteId;
 	}
 
-	public void setNoteId(int noteId) {
-		this.noteId = noteId;
-	}
-
 	public String getNoteTitle() {
+
 		return noteTitle;
 	}
 
-	public void setNoteTitle(String noteTitle) {
-		this.noteTitle = noteTitle;
-	}
-
 	public String getNoteContent() {
+
 		return noteContent;
 	}
 
-	public void setNoteContent(String noteContext) {
-		this.noteContent = noteContext;
-	}
-
 	public String getNoteStatus() {
+
 		return noteStatus;
 	}
 
-	public void setNoteStatus(String noteStatus) {
-		this.noteStatus = noteStatus;
+	public void setNoteId(int parseInt) {
+		this.noteId=parseInt;
 	}
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
+	public void setNoteTitle(String parameter) {
+		this.noteTitle=parameter;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
+	public void setNoteContent(String parameter) {
+		this.noteContent=parameter;
 	}
 
+	public void setNoteStatus(String parameter) {
+		this.noteStatus=parameter;
+	}
+
+	public void setCreatedAt(LocalDateTime now) {
+		this.dateTime=now;
+	}
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Note)) {
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		Note note = (Note) o;
-		return getNoteId() == note.getNoteId() &&
-				getNoteTitle().equals(note.getNoteTitle()) &&
-				getNoteContent().equals(note.getNoteContent()) &&
-				getNoteStatus().equals(note.getNoteStatus());
+		if (!(obj instanceof Note))
+			return false;
+		Note other = (Note) obj;
+		if (noteId != other.noteId)
+			return false;
+		return true;
+	}
+	@Override
+	public String toString() {
+		return "Employee [id=" + noteId + ", name=" + noteTitle + ", joiningDate="
+				+ noteContent + ", salary=" + noteStatus + "]";
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Integer.toString(getNoteId()).hashCode();
-		result = prime * result + getNoteTitle().hashCode();
-		result = prime * result + getNoteContent().hashCode();
-		return result;
-	}
 }
